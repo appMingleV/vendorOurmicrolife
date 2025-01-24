@@ -1,0 +1,15 @@
+/* Define the animation for the left-to-right fill effect */
+@keyframes leftToRightFill {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.animation-left-to-right:hover {
+  background-image: linear-gradient(to right, #ef4444 50%, transparent 50%);
+  background-size: 200% 100%;
+  animation: leftToRightFill 2s forwards;
+}

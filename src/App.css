@@ -1,0 +1,19 @@
+/* src/App.css */
+.app {
+  display: flex;
+  font-family: Arial, sans-serif;
+}
+
+.content {
+  flex: 1;
+ 
+  transition: margin-left 0.3s;
+}
+
+.sidebar.collapsed + .content {
+  margin-left: 60px; /* Adjust margin for the collapsed sidebar */
+}
+a{
+  text-decoration: none;
+  list-style: none;
+}
