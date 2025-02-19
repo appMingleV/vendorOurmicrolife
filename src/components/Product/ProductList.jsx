@@ -43,10 +43,11 @@ const ProductList = () => {
 
     if (confirmDelete) {
       try {
-        await axios.delete(
+       const response= await axios.delete(
           `${process.env.REACT_APP_BASE_LARAVEL}api/product/delete/${vendorId}/${productId}`,
           { headers: { Authorization: ` Bearer ${token} ` } }
         );
+        console.log(response)
         alert("Product deleted successfully!");
         fetchProducts(); // Refresh the product list without reloading the page
       } catch (error) {

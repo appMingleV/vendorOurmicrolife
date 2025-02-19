@@ -357,21 +357,7 @@ const AddProduct = () => {
                 description.
               </p>
             )}
-            <ReactQuill
-              placeholder="Product Description"
-              value={productData.description}
-              onChange={(content) => {
-                // Limit content to 5000 characters
-                if (content.length <= 5000) {
-                  setProductData((prevData) => ({
-                    ...prevData,
-                    description: content,
-                  }));
-                }
-              }}
-              className="w-full border border-gray-300 rounded p-2 h-[400px] max-h-[400px] resize-none"
-              required
-            />
+        
             {/* <textarea
               name="description"
               placeholder="Product Description"

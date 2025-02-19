@@ -21,7 +21,6 @@ const UpdateProduct = () => {
   const [featuredImage, setFeaturedImage] = useState("");
   const [prices, setPrices] = useState([
     {
-     
       product_id: "",
       color_name: "",
       images: [
@@ -117,7 +116,7 @@ const UpdateProduct = () => {
 
           console.log("Mapped Product Data:", mappedProductData);
           setProductData(mappedProductData);
-          setFeactureImage(singleProduct.featured_image);
+          // setFeactureImage(singleProduct.featured_image);
         }
       })
       .catch((error) => console.error("Error fetching product:", error));
