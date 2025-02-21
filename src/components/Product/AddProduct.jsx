@@ -357,16 +357,16 @@ const AddProduct = () => {
                 description.
               </p>
             )}
-        
-            {/* <textarea
+
+            <textarea
               name="description"
               placeholder="Product Description"
               value={productData.description}
               onChange={handleInputChange}
               required
               maxLength={5000} // Set the maximum character limit to 5000
-              className="w-full border border-gray-300 rounded p-2 h-[400px] max-h-[400px] resize-none"
-            ></textarea> */}
+              className="w-full border border-gray-300 rounded p-2 h-[100px] max-h-[200px] resize-none"
+            ></textarea>
             {/* Display character count */}
             <div className="absolute bottom-4 right-4 text-xs text-gray-500 z-10">
               {productData.description.length} / 5000
