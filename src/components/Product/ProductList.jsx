@@ -44,7 +44,7 @@ const ProductList = () => {
     if (confirmDelete) {
       try {
        const response= await axios.delete(
-          `${process.env.REACT_APP_BASE_LARAVEL}api/product/delete/${vendorId}/${productId}`,
+          `${process.env.REACT_APP_BASE_URL}/vendor/product/${productId}`,
           { headers: { Authorization: ` Bearer ${token} ` } }
         );
         console.log(response)
