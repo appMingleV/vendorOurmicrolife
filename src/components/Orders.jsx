@@ -38,13 +38,14 @@ const Orders = () => {
   const fetchOrder = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BASE_LARAVEL}api/order-items/vendor/${vendorId}`,
+        `${process.env.REACT_APP_BASE_URL}vendor/order/${vendorId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+     
       setOrder(response.data.data.reverse());
       console.log("the orders are ", response.data.data);
     } catch (error) {
@@ -122,7 +123,7 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody>
-              {currentOrders.map((order) => (
+              {order.map((order) => (
                 <tr key={order.id} className="border-b">
                   <td className="p-4 text-blue-500 font-semibold">
                     {order.id}
@@ -132,20 +133,20 @@ const Orders = () => {
                     {order.created_at.split("T")[1].split(".")[0]}
                   </td>
                   <td>
-                    {order.order_cart.shipping_address.full_name}{" "}
-                    {order.order_cart.shipping_address.last_name}
+                    {order?.addressDetails?.full_address || ""}{" "}
+                    {order?.addressDetails?.full_name || "not found"}
                   </td>
                   <td>
                     <span
                       className={`px-2 py-1 rounded-full text-sm ${
-                        order.order_cart.payment_type === "upi"
+                        order?.payment_type === "upi"
                           ? "bg-green-100 text-green-700"
-                          : order.fulfillment === "cod"
+                          : order?.fulfillment === "cod"
                           ? "bg-purple-100 text-purple-700"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {order.order_cart.payment_type}
+                      {order.payment_type}
                     </span>
                   </td>
                   <td>{order.total_price}</td>
@@ -157,7 +158,7 @@ const Orders = () => {
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {order.order_cart.status}
+                      {order.status}
                     </span>
                   </td>
                   <td

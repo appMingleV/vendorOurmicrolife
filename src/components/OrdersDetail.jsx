@@ -19,27 +19,27 @@ const OrdersDetail = () => {
   const fetchProduct = async () => {
     try {
       const reponse = await axios.get(
-        `${process.env.REACT_APP_BASE_LARAVEL}api/getSignleProduct/product_id_${orderData.product_id}`
+        `${process.env.REACT_APP_BASE_URL}vendor/orderSingle/${orderData.product_id}`
       );
-
-      const product = reponse.data.products[0];
+     console.log(reponse);
+      const product = reponse.data.data[0];
       console.log("product in api", product);
       setProducts(product);
-      const productPrice = product.prices.filter(
-        (item) => item.color_name === orderData.color
-      );
-      setPriceProduct(productPrice[0]);
-      console.log(productPrice[0].images[0].image_path);
-      setProductImage(productPrice[0].images[0].image_path);
+      // const productPrice = product.prices.filter(
+      //   (item) => item.color_name === orderData.color
+      // );
+      // setPriceProduct(productPrice[0]);
+      // console.log(productPrice[0].images[0].image_path);
+      // setProductImage(productPrice[0].images[0].image_path);
 
-      const configPrice = productPrice[0].configurations.filter(
-        (item) => item.size === orderData.size
-      );
-      console.log("found config", configPrice[0]);
-      setConfigPrice(configPrice[0]);
-      setFetchData(true);
-      console.log("product ", product);
-      console.log("product price ", productPrice[0]);
+      // const configPrice = productPrice[0].configurations.filter(
+      //   (item) => item.size === orderData.size
+      // );
+      // console.log("found config", configPrice[0]);
+      // setConfigPrice(configPrice[0]);
+      // setFetchData(true);
+      // console.log("product ", product);
+      // console.log("product price ", productPrice[0]);
     } catch (errr) {
       console.log(errr);
     }
@@ -64,7 +64,7 @@ const OrdersDetail = () => {
             <div>
               <div>
                 <p>
-                  <strong>Order ID:</strong> {orderData?.id}
+                  <strong>Order ID:</strong> {product?.id}
                 </p>
                 <div className="flex">
                   <p className="font-semibold">Date / Time: </p>
@@ -75,11 +75,11 @@ const OrdersDetail = () => {
                 </div>
                 <div className="flex">
                   <p className="font-semibold">Status:</p>
-                  <p>{orderData.order_cart.status}</p>
+                  <p>{product?.status}</p>
                 </div>
                 <div className="flex">
                   <p className="font-semibold"> Payment Status:</p>
-                  <p>{orderData?.order_cart?.payment_type}</p>
+                  <p>{product?.payment_type}</p>
                 </div>
               </div>
             </div>
@@ -87,35 +87,35 @@ const OrdersDetail = () => {
               <div className=" text-lg font-semibold">Address Info</div>
               <div className="flex">
                 <p className="font-semibold">Name:</p>
-                <p>{orderData?.order_cart?.shipping_address?.full_name}</p>
+                <p>{product?.addressDetails?.full_name}</p>
               </div>
 
               <div className="flex">
                 <p className=" font-semibold">Phone:</p>
-                <p>{orderData?.order_cart?.shipping_address?.mobile_number}</p>
+                <p>{product?.addressDetails?.mobile_number}</p>
               </div>
 
               <div>
                 <div className="flex">
                   <p className=" font-semibold">Address:</p>
-                  <p>{orderData?.order_cart?.shipping_address?.full_address}</p>
+                  <p>{product?.addressDetails?.full_address}</p>
                 </div>
                 <div className="flex">
                   <p className=" font-semibold"> NearBy Address:</p>
-                  <p>{orderData?.order_cart?.shipping_address?.near_by_address}</p>
+                  <p>{product?.addressDetails?.near_by_address}</p>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex">
                     <p className=" font-semibold">city:</p>
-                    <p>{orderData?.order_cart?.shipping_address?.city}</p>
+                    <p>{product?.addressDetails?.city}</p>
                   </div>
                   <div className="flex">
                     <p className=" font-semibold">State:</p>
-                    <p>{orderData?.order_cart?.shipping_address?.state}</p>
+                    <p>{product?.addressDetails?.state}</p>
                   </div>
                   <div className="flex">
                     <p className=" font-semibold">Pin Code:</p>
-                    <p>{orderData?.order_cart?.shipping_address?.pin_code}</p>
+                    <p>{product?.addressDetails?.pin_code}</p>
                   </div>
                 </div>
               </div>
@@ -140,21 +140,21 @@ const OrdersDetail = () => {
                 <tbody className="text-gray-600 text-sm font-light">
                   <tr className="border-b border-gray-200 hover:bg-gray-100">
                     <td className="p-4 text-left text-blue-500 font-semibold">
-                      {orderData.product_id}
+                      {product.product_id}
                     </td>
                     <td className="p-4 text-left text-blue-500 font-semibold">
-                      {configPrice.sale_price}
+                      {product.sales_price}
                     </td>
-                    <td className=" text-left">{product?.name}</td>
+                    <td className=" text-left">{product?.product_name}</td>
                     <td className=" text-left">
                       <img
-                        src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${productImage}`}
+                        src={`${product.product_name}`}
                         alt="Product Image"
                         className="h-20 w-20 object-cover"
                       />
                     </td>
-                    <td className=" text-left">{orderData?.color}</td>
-                    <td className="text-left">{orderData?.size} </td>
+                    <td className=" text-left">{product?.color}</td>
+                    <td className="text-left">{product?.size} </td>
                   </tr>
                 </tbody>
               </table>
