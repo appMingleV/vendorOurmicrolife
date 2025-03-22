@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
@@ -15,36 +15,31 @@ const OrdersDetail = () => {
   const vendorId = localStorage.getItem("vendorId");
   const location = useLocation();
   const orderData = location.state;
+  console.log("location", location.state)
 
   const fetchProduct = async () => {
     try {
-      const reponse = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}vendor/orderSingle/${orderData.product_id}`
+
+      console.log(orderData.product_id);
+      const productid = location?.state;
+   
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}vendor/orderSingle/${productid.id}`
       );
-     console.log(reponse);
-      const product = reponse.data.data[0];
+      console.log(productid.id);
+      console.log("response==========", response);
+      const product = response?.data?.data[0];
       console.log("product in api", product);
       setProducts(product);
-      // const productPrice = product.prices.filter(
-      //   (item) => item.color_name === orderData.color
-      // );
-      // setPriceProduct(productPrice[0]);
-      // console.log(productPrice[0].images[0].image_path);
-      // setProductImage(productPrice[0].images[0].image_path);
 
-      // const configPrice = productPrice[0].configurations.filter(
-      //   (item) => item.size === orderData.size
-      // );
-      // console.log("found config", configPrice[0]);
-      // setConfigPrice(configPrice[0]);
-      // setFetchData(true);
-      // console.log("product ", product);
-      // console.log("product price ", productPrice[0]);
     } catch (errr) {
       console.log(errr);
     }
   };
-  !fetchData && fetchProduct();
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
 
   // if (!order) {
   //   return <div>Order Detail Not Found</div>;
@@ -56,7 +51,7 @@ const OrdersDetail = () => {
         <Sidebar />
       </div>
       <div className="w-full pt-4  pr-4">
-        <p className=" flex justify-center lg:text-2xl sm:text-sm font-semibold">
+        <p className=" flex justify-center lg:text-2xl sm:text-sm font-semibold  ">
           Order Details
         </p>
         <div className="mt-4">
@@ -68,10 +63,10 @@ const OrdersDetail = () => {
                 </p>
                 <div className="flex">
                   <p className="font-semibold">Date / Time: </p>
-                  {/* <p>
-                    {order.created_at.split("T")[0]}/
-                    {order.created_at.split("T")[1].split(".")[0]}
-                  </p> */}
+                  <p>
+                    {product.created_at.split("T")[0]}/
+                    {product.created_at.split("T")[1].split(".")[0]}
+                  </p>
                 </div>
                 <div className="flex">
                   <p className="font-semibold">Status:</p>
@@ -148,7 +143,7 @@ const OrdersDetail = () => {
                     <td className=" text-left">{product?.product_name}</td>
                     <td className=" text-left">
                       <img
-                        src={`${product.product_name}`}
+                        src={`${product.product_image}`}
                         alt="Product Image"
                         className="h-20 w-20 object-cover"
                       />
