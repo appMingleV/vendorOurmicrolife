@@ -14,20 +14,20 @@ const OrdersDetail = () => {
   const token = localStorage.getItem("token");
   const vendorId = localStorage.getItem("vendorId");
   const location = useLocation();
-  const orderData = location.state;
-  console.log("location", location.state)
+  const orderData = location?.state;
+  console.log("location", location?.state)
 
   const fetchProduct = async () => {
     try {
 
-      console.log(orderData.product_id);
+      console.log(orderData?.product_id);
       const productid = location?.state;
    
       const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}vendor/orderSingle/${productid.id}`
+        `${process.env.REACT_APP_BASE_URL}vendor/orderSingle/${productid?.id}`
       );
-      console.log(productid.id);
-      console.log("response==========", response);
+      console.log(productid?.id);
+
       const product = response?.data?.data[0];
       console.log("product in api", product);
       setProducts(product);
@@ -64,8 +64,8 @@ const OrdersDetail = () => {
                 <div className="flex">
                   <p className="font-semibold">Date / Time: </p>
                   <p>
-                    {product.created_at.split("T")[0]}/
-                    {product.created_at.split("T")[1].split(".")[0]}
+                    {product?.created_at?.split("T")[0]}/
+                    {product?.created_at?.split("T")[1].split(".")[0]}
                   </p>
                 </div>
                 <div className="flex">
@@ -135,15 +135,15 @@ const OrdersDetail = () => {
                 <tbody className="text-gray-600 text-sm font-light">
                   <tr className="border-b border-gray-200 hover:bg-gray-100">
                     <td className="p-4 text-left text-blue-500 font-semibold">
-                      {product.product_id}
+                      {product?.product_id}
                     </td>
                     <td className="p-4 text-left text-blue-500 font-semibold">
-                      {product.sales_price}
+                      {product?.sales_price}
                     </td>
                     <td className=" text-left">{product?.product_name}</td>
                     <td className=" text-left">
                       <img
-                        src={`${product.product_image}`}
+                        src={`${product?.product_image}`}
                         alt="Product Image"
                         className="h-20 w-20 object-cover"
                       />

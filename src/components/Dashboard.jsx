@@ -50,8 +50,8 @@ const Dashboard = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/${vendorId}`
       );
-      setProfileStatus(response.data.data.vendorPersonalDetails.status);
-      console.log("The profile is ", response.data.data);
+      setProfileStatus(response?.data?.data?.vendorPersonalDetails?.status);
+      console.log("The profile is ", response?.data?.data);
     } catch (error) {
       console.error("Error during fetch Vendor Api", error);
     }

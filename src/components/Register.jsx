@@ -109,7 +109,7 @@ const Register = () => {
                     fullWidth
                     label="Owner Name (Same as PAN)"
                     name="name"
-                    value={formData.name}
+                    value={formData?.name}
                     onChange={handleInputChange}
                     className="mb-2"
                     sx={{
@@ -126,7 +126,7 @@ const Register = () => {
                       fullWidth
                       displayEmpty
                       name="gender"
-                      value={formData.gender}
+                      value={formData?.gender}
                       sx={{
                         "& .MuiInputBase-input": {
                           paddingY: "7px",
@@ -144,7 +144,7 @@ const Register = () => {
                       label="Date of Birth (Same as PAN)"
                       type="date"
                       name="dob"
-                      value={formData.dob}
+                      value={formData?.dob}
                       sx={{
                         "& .MuiInputBase-input": {
                           paddingY: "7px",
@@ -162,7 +162,7 @@ const Register = () => {
                       label="Mobile"
                       name="mobile"
                       type="text"
-                      value={formData.mobile}
+                      value={formData?.mobile}
                       onChange={handleInputChange}
                       inputMode="numeric" // Ensures that only numeric input is possible on mobile devices
                       pattern="\d{10}" // Restricts input to 10 digits
@@ -187,7 +187,7 @@ const Register = () => {
                         endAdornment: (
                           <InputAdornment position="end">
                             {/* Mobile Check Icon */}
-                            {formData.mobile.length === 10 && (
+                            {formData?.mobile?.length === 10 && (
                               <FaCircleCheck className="text-green-600 text-2xl" />
                             )}
                           </InputAdornment>
@@ -219,7 +219,7 @@ const Register = () => {
                       label="Email"
                       name="email"
                       type="email"
-                      value={formData.email}
+                      value={formData?.email}
                       sx={{
                         "& .MuiInputBase-input": {
                           paddingY: "7px",
@@ -231,8 +231,8 @@ const Register = () => {
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {formData.email.includes("@") &&
-                              formData.email.includes(".") && (
+                            {formData?.email?.includes("@") &&
+                              formData?.email?.includes(".") && (
                                 <FaCircleCheck className="text-green-600 text-2xl" />
                               )}
                           </InputAdornment>
@@ -264,7 +264,7 @@ const Register = () => {
                     fullWidth
                     label="Address (Same as Aadhar Card)"
                     name="address"
-                    value={formData.address}
+                    value={formData?.address}
                     sx={{
                       "& .MuiInputBase-input": {
                         paddingY: "7px",

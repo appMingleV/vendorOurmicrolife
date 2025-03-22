@@ -17,7 +17,6 @@ import ViewProduct from "./components/Product/PreviewAllProducts.jsx";
 import Products from "./components/Product/ProductList.jsx";
 import Profile from "./components/Profile/Profile.jsx";
 // import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
-import Analytics from "./components/Analytics.jsx";
 import CouponForm from "./components/CouponManagement/CouponForm.jsx";
 import Coupons from "./components/CouponManagement/CouponList.jsx";
 import Inventory from "./components/Inventory.jsx";
@@ -27,6 +26,7 @@ import Settings from "./components/Settings.jsx";
 import SignUp from "./components/SignUp.jsx";
 import Support from "./components/Support.jsx";
 import Transactions from "./components/Transactions.jsx";
+import Analytics from "./components/Analytics.jsx";
 
 const App = () => {
   const NAVIGATION = [
@@ -50,7 +50,7 @@ const App = () => {
     { path: "/coupon-form", element: <CouponForm /> },
     { path: "/rating", element: <RatingAndReviews /> },
     { path: "/transactions", element: <Transactions /> },
-    { path: "/analytics", element: <Analytics /> },
+    {path:"/analytics", element:<Analytics />},
     { path: "/support", element: <Support /> },
     { path: "/inventory", element: <Inventory /> },
   ];

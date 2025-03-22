@@ -23,8 +23,8 @@ const ProductList = () => {
         `${process.env.REACT_APP_BASE_LARAVEL}api/product/getpbyvendor/${vendorId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("response product listing", response.data.products);
-      setProducts(response.data.products.reverse());
+      console.log("response product listing", response?.data?.products);
+      setProducts(response?.data?.products?.reverse());
     } catch (error) {
       console.error("Error in fetching Products", error);
     } finally {
@@ -159,7 +159,7 @@ const ProductList = () => {
 
                   <td className="border-b w-1/6">
                     <img
-                      src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${product.featured_image}`}
+                      src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${product?.featured_image}`}
                       className="h-16 w-16 object-cover"
                       alt=""
                     />
@@ -172,19 +172,19 @@ const ProductList = () => {
                     <div className="flex justify-center">
                       <button
                         className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                        onClick={() => handleView(product.id)}
+                        onClick={() => handleView(product?.id)}
                       >
                         <FaEye />
                       </button>
                       <button
                         className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
-                        onClick={() => handleEdit(product.id)}
+                        onClick={() => handleEdit(product?.id)}
                       >
                         <FaEdit />
                       </button>
                       <button
                         className="bg-red-500 text-white px-2 py-1 rounded"
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDelete(product?.id)}
                       >
                         <FaTrash />
                       </button>

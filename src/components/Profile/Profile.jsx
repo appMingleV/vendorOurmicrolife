@@ -28,9 +28,9 @@ const ProfileUpload = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}vendor/${vendorId}`
       );
-      setVendor(response.data.data);
-      setpersonalDetail(response.data.data.vendorPersonalDetails);
-      console.log("The profile is ", response.data.data);
+      setVendor(response?.data?.data);
+      setpersonalDetail(response?.data?.data?.vendorPersonalDetails);
+      console.log("The profile is ", response?.data?.data);
     } catch (error) {
       console.error("Error during fetch Vendor Api", error);
     }
@@ -46,7 +46,7 @@ const ProfileUpload = () => {
   const closePopup = () => setIsOpen(false);
 
   const handleLogoChange = (e) => {
-    setLogo(e.target.files[0]);
+    setLogo(e?.target?.files[0]);
   };
 
   const handleLogoSubmit = async (e) => {
@@ -77,18 +77,18 @@ const ProfileUpload = () => {
   };
 
   const handleImageUpdate = (e) => {
-    setImage(e.target.files[0]);
+    setImage(e?.target?.files[0]);
   };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
 
     const updatedProfileData = {
-      first_name: e.target.first_name.value || vendor.first_name,
-      last_name: e.target.last_name.value || vendor.last_name,
-      phone_number: e.target.phone_number.value || vendor.phone_number,
-      email: e.target.email.value || vendor.email,
-      gstin: e.target.gstin.value || vendor.gstin,
+      first_name: e?.target?.first_name?.value || vendor?.first_name,
+      last_name: e?.target?.last_name?.value || vendor?.last_name,
+      phone_number: e?.target?.phone_number?.value || vendor?.phone_number,
+      email: e?.target?.email?.value || vendor?.email,
+      gstin: e?.target?.gstin?.value || vendor?.gstin,
     };
 
     // Append the image separately if it's provided
@@ -109,7 +109,7 @@ const ProfileUpload = () => {
           },
         }
       );
-      console.log("Profile updated successfully!", response.data);
+      console.log("Profile updated successfully!", response?.data);
       alert("Profile updated successfully!");
       fetchVendor(); // Refresh vendor data after updating
     } catch (error) {
@@ -169,21 +169,21 @@ const ProfileUpload = () => {
               )}
             </div>
             <h2 className="text-lg font-bold mb-2 text-center">
-            {vendorDetail.ownerName}
+            {vendorDetail?.ownerName}
             </h2>
             <div className="flex justify-center items-center">
   <p
     className={`text-sm text-center mb-4 ${
-      vendorDetail.status === "Accept"
+      vendorDetail?.status === "Accept"
         ? "bg-green-100 text-green-700"
-        : vendorDetail.status === "Pending"
+        : vendorDetail?.status === "Pending"
         ? "bg-red-100 text-red-700"
         : "bg-gray-100 text-gray-700"
     } py-2 px-4 rounded`}
   >
-    {vendorDetail.status === "Accept" 
+    {vendorDetail?.status === "Accept" 
       ? "Approved" 
-      : vendorDetail.status === "Pending" 
+      : vendorDetail?.status === "Pending" 
       ? "Pending" 
       : "Suspended"}
   </p>
@@ -206,7 +206,7 @@ const ProfileUpload = () => {
                   type="text"
                   className="border border-gray-300 w-full p-2 rounded"
                   placeholder="First Name"
-                  defaultValue={vendorDetail.ownerName} // Pre-fill with current first name
+                  defaultValue={vendorDetail?.ownerName} // Pre-fill with current first name
                   name="first_name"
                 />
               </div>
@@ -217,7 +217,7 @@ const ProfileUpload = () => {
                   maxLength={15}
                   className="border border-gray-300 w-full p-2 rounded"
                   placeholder="Last Name"
-                  defaultValue={vendorDetail.gender} // Pre-fill with current last name
+                  defaultValue={vendorDetail?.gender} // Pre-fill with current last name
                   name="last_name"
                 />
               </div>
@@ -230,7 +230,7 @@ const ProfileUpload = () => {
                   maxLength={10}
                   className="border border-gray-300 w-full p-2 rounded"
                   placeholder="Mobile Number"
-                  defaultValue={vendorDetail.mobile} // Pre-fill with current phone number
+                  defaultValue={vendorDetail?.mobile} // Pre-fill with current phone number
                   name="phone_number"
                   required
                 />
@@ -242,7 +242,7 @@ const ProfileUpload = () => {
                   type="email"
                   className="border border-gray-300 w-full p-2 rounded"
                   placeholder="Enter Email"
-                  defaultValue={vendorDetail.email}
+                  defaultValue={vendorDetail?.email}
                   // Pre-fill with current email
                   name="email"
                   required

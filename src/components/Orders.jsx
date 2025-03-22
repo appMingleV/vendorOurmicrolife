@@ -32,8 +32,8 @@ const Orders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [order, setOrder] = useState([]);
 
-  const token = localStorage.getItem("token");
-  const vendorId = localStorage.getItem("vendorId");
+  const token = localStorage?.getItem("token");
+  const vendorId = localStorage?.getItem("vendorId");
 
   const fetchOrder = async () => {
     try {
@@ -46,8 +46,8 @@ const Orders = () => {
         }
       );
      
-      setOrder(response.data.data.reverse());
-      console.log("the orders are ", response.data.data);
+      setOrder(response?.data?.data.reverse());
+      console.log("the orders are ", response?.data?.data);
     } catch (error) {
       console.error("Error in fetching Orders");
     }
@@ -61,7 +61,7 @@ const Orders = () => {
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = order.slice(indexOfFirstOrder, indexOfLastOrder); // Paginate the fetched orders
-  const totalPages = Math.ceil(order.length / ordersPerPage);
+  const totalPages = Math?.ceil(order?.length / ordersPerPage);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -76,7 +76,7 @@ const Orders = () => {
   };
 
   const handleOrderDetail = (orderId) => {
-    const foundOrder = order.find((element) => orderId == element.id);
+    const foundOrder = order?.find((element) => orderId == element?.id);
     navigate(`/orderDetail/${orderId}`, { state: foundOrder });
   };
   return (
@@ -129,8 +129,8 @@ const Orders = () => {
                     {order.id}
                   </td>
                   <td>
-                    {order.created_at.split("T")[0]}/
-                    {order.created_at.split("T")[1].split(".")[0]}
+                    {order?.created_at?.split("T")[0]}/
+                    {order?.created_at?.split("T")[1].split(".")[0]}
                   </td>
                   <td>
                     {order?.addressDetails?.full_address || ""}{" "}
@@ -146,19 +146,19 @@ const Orders = () => {
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {order.payment_type}
+                      {order?.payment_type}
                     </span>
                   </td>
-                  <td>{order.total_price}</td>
+                  <td>{order?.total_price}</td>
                   <td>
                     <span
                       className={`px-2 py-1 rounded-full text-sm ${
-                        order.status === "Delivered"
+                        order?.status === "Delivered"
                           ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {order.status}
+                      {order?.status}
                     </span>
                   </td>
                   <td

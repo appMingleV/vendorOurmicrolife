@@ -1,12 +1,14 @@
-import React from "react";
-import Sidebar from "./Sidebar";
+import React from 'react'
+import Sidebar from './Sidebar'
+
 
 const Analytics = () => {
-  <div className="flex">
-    <div>
-      <Sidebar />
-    </div>
-    <div className="flex w-full items-center justify-center h-screen bg-gray-100">
+  return (
+    <div className="flex">
+      <div>
+        <Sidebar />
+      </div>
+      <div className="flex  w-full items-center justify-center h-screen bg-gray-100">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-800 sm:text-5xl">
           Under Development
@@ -16,7 +18,8 @@ const Analytics = () => {
         </p>
       </div>
     </div>
-  </div>;
-};
+    </div>
+  )
+}
 
-export default Analytics;
+export default Analytics
