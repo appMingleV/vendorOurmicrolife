@@ -19,10 +19,7 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       console.log("hey");
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_LARAVEL}api/product/getpbyvendor/${vendorId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}productAll/${vendorId}`);
       console.log("response product listing", response?.data?.products);
       setProducts(response?.data?.products?.reverse());
     } catch (error) {

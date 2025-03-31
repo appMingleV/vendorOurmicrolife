@@ -9,6 +9,8 @@ import ReactQuill from "react-quill";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Sidebar from "../Sidebar";
+
+import "react-quill/dist/quill.snow.css";
 import "./AddProduct.css";
 
 const AddProduct = () => {
@@ -30,7 +32,6 @@ const AddProduct = () => {
     quantity: totalQuantity,
     status: "",
     coin: "",
-    featured_image: "",
     category_id: "",
     sub_category_id: "",
     brand_name: "",
@@ -40,13 +41,13 @@ const AddProduct = () => {
         size_name: "",
         old_price: "",
         sale_price: "",
-        images: [],
         specifications: [{ spec_key: "", spec_value: "" }],
         configuration: [{ size: "", old_price: "", sale_price: "", stock: "" }],
       },
     ],
   });
-
+  const [featuredImage,setfeaturedImage]=useState('');
+  const [images,setImages]=useState([]);
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -118,6 +119,7 @@ const AddProduct = () => {
   };
   // Handle form data input changes
   const handleInputChange = (e) => {
+    console.log("nnnnnnnnnnnnnnnnnnnnnnnnn",e.target)
     const { name, value } = e.target;
     if (name === "quantity" || name == "coin") {
       // Allow only numbers (non-negative integers)
@@ -185,6 +187,12 @@ const AddProduct = () => {
     }
   };
 
+  const handleInputChangeReact=(value)=>{
+      setProductData((prevData) => ({
+        ...prevData,
+        "description": value,
+      }));
+  }
   // Remove a price entry
   const handleRemovePrice = (priceIndex) => {
     const prices = [...productData.prices];
@@ -255,66 +263,79 @@ const AddProduct = () => {
   //   }
   // };
 
-  const handleMultipleImageChange = (priceIndex, e) => {
-    const files = Array.from(e.target.files); // Convert FileList to Array
-    const prices = [...productData.prices];
+ const handleMultipleImageChange = (priceIndex, e) => {
+  const files = Array.from(e.target.files); // Convert FileList to Array
+  const prices = [...productData.prices];
 
-    const readers = files.map((file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result); // Resolve with base64 string
-        reader.readAsDataURL(file); // Convert file to base64
-      });
-    });
+  // Add selected files to the specific price index
+  // prices[priceIndex].images.push(...files);
+  setProductData({ ...productData, prices });
 
-    Promise.all(readers).then((base64Images) => {
-      prices[priceIndex].images.push(...base64Images); // Add all images
-      setProductData({ ...productData, prices });
-    });
-  };
+  // Update the images state with actual files
+  setImages((prevImages) => [...prevImages, ...files]);
+};
 
   const handleRemoveImage = (priceIndex, imgIndex) => {
     const prices = [...productData.prices];
-    prices[priceIndex].images.splice(imgIndex, 1); // Remove the image
+ 
     setProductData({ ...productData, prices });
+    setImages((prevImages) => prevImages.filter((_, index) => index !== imgIndex));
   };
 
   // Form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("the productData is ", productData);
-    // Add product to API
-    try {
-      const formData = new FormData();
-      for (const key in productData) {
-        if (key === "prices") {
-          formData.append(key, JSON.stringify(productData[key]));
-        } else {
-          formData.append(key, productData[key]);
-        }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("The productData is:", productData);
+
+  try {
+    const formData = new FormData();
+
+    // Append product data
+    for (const key in productData) {
+      if (key === "prices") {
+        formData.append(key, JSON.stringify(productData[key])); // Convert array to JSON string
+      } else {
+        formData.append(key, productData[key]);
       }
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_LARAVEL}api/product/add/${vendorId}`,
-        productData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log(response.data);
-      setMessage("Product added successfully!");
-      navigate("/products");
-    } catch (error) {
-      console.error("Error in adding product", error);
     }
 
-    toast.success("Product data submitted");
-  };
+    // Append featured image (if available)
+    if (featuredImage) {
+      formData.append("featured_image", featuredImage);
+    }
 
+    // Append multiple images (if available)
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append("images", image); // Proper way to send multiple images
+      });
+    }
+     console.log("product data ====================================>    ",productData)
+    // Debugging: Check formData contents
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    // Send request to API
+    const response = await axios.post(
+      `http://127.0.0.1:8000/api/vendor/product/${vendorId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log(response.data);
+    setMessage("Product added successfully!");
+    navigate("/products");
+
+    toast.success("Product data submitted");
+  } catch (error) {
+    console.error("Error in adding product", error);
+  }
+};
   return (
     <div className="flex">
       <div>
@@ -358,15 +379,27 @@ const AddProduct = () => {
               </p>
             )}
 
-            <textarea
-              name="description"
-              placeholder="Product Description"
-              value={productData.description}
-              onChange={handleInputChange}
-              required
-              maxLength={5000} // Set the maximum character limit to 5000
-              className="w-full border border-gray-300 rounded p-2 h-[100px] max-h-[200px] resize-none"
-            ></textarea>
+           <ReactQuill
+                 value={productData.description}
+                 name="description"
+                 onChange={handleInputChangeReact}
+                  modules={{
+                    toolbar: [
+                      ["bold", "italic", "underline", "strike"], // Formatting buttons
+                      [{ list: "ordered" }, { list: "bullet" }], // Lists
+                      ["link", "image"], // Link and image options
+                      [{ header: [1, 2, 3, false] }], // Header dropdown
+                      [{ align: [] }], // Alignments
+                      [{ color: [] }, { background: [] }],
+                    ],
+                  }}
+                  placeholder={`Write your content for here...`}
+                  className="w-full"
+                  style={{
+                    height: "400px",
+                    overflowY: "auto",
+                  }}
+                />
             {/* Display character count */}
             <div className="absolute bottom-4 right-4 text-xs text-gray-500 z-10">
               {productData.description.length} / 5000
@@ -431,13 +464,11 @@ const AddProduct = () => {
                 name="featured_image"
                 onChange={(e) => {
                   const file = e.target.files[0];
+                  setfeaturedImage(file)
                   if (file) {
                     const reader = new FileReader();
                     reader.onloadend = () => {
-                      setProductData({
-                        ...productData,
-                        featured_image: reader.result,
-                      });
+                    
                       setPreview(reader.result);
                     };
                     reader.readAsDataURL(file);
@@ -639,10 +670,10 @@ const AddProduct = () => {
                 />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {price.images.map((img, imgIndex) => (
+                {images?.map((img, imgIndex) => (
                   <div key={imgIndex} className="relative w-24 h-24">
                     <img
-                      src={img}
+                      src={URL.createObjectURL(img)}
                       alt={`Image ${imgIndex + 1}`}
                       className="w-full h-full object-cover rounded border"
                     />
