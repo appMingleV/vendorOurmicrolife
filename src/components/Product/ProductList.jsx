@@ -19,9 +19,11 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       console.log("hey");
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}productAll/${vendorId}`);
-      console.log("response product listing", response?.data?.products);
-      setProducts(response?.data?.products?.reverse());
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}vendor/productAll/${vendorId}`);
+      console.log("response product listing", response);
+      
+      setProducts(response?.data?.data?.reverse());
+      // setProducts(response?.data?.products?.reverse());
     } catch (error) {
       console.error("Error in fetching Products", error);
     } finally {
@@ -156,7 +158,7 @@ const ProductList = () => {
 
                   <td className="border-b w-1/6">
                     <img
-                      src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${product?.featured_image}`}
+                      src={`${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${product?.featured_image}`}
                       className="h-16 w-16 object-cover"
                       alt=""
                     />
