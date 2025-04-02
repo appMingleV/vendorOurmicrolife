@@ -5,7 +5,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
-
+import ReactQuill from "react-quill";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Sidebar from "../Sidebar";
@@ -44,7 +44,7 @@ const AddProduct = () => {
         sale_price: "",
         images: [],
         specifications: [{ spec_key: "", spec_value: "" }],
-        configuration: [{ size: "", old_price: "", sale_price: "", stock: "" }],
+        config: [{ size: "", old_price: "", sale_price: "", stock: "" }],
       },
     ],
   });
@@ -55,23 +55,27 @@ const AddProduct = () => {
   const [thumbnail, setthumbnail] = useState(false);
   const [subCategoriesId, setSubCategoriesId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+    const [images,setImages]=useState([]);
+  const [featuredImage,setfeaturedImage]=useState('');
   // Fetch all categories when the component mounts
   useEffect(() => {
     console.log(id);
     const fetchSingleProduct = async () => {
       try {
         const response = await axios.get(
-          `https://ourmicrolife.com/ourmicrolife/api/getSignleProduct/product_id_${id}`
+          `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${id}`
         );
-        console.log(response?.data?.products[0]);
+     
+        const product=response?.data?.data[0]
+        console.log("========================== ",product)
         const response1 = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}admin/subategory/category/${response?.data?.products[0].category_id}`
+          `${process.env.REACT_APP_BASE_URL}admin/subategory/category/${product?.category_id}`
         );
-        setSubCategories(response1.data.data);
-        console.log(response1);
-        setProductData(response?.data?.products[0]);
-        setPrices(response?.data?.products[0].prices);
+    
+        setSubCategories(response1?.data?.data);
+  
+        setProductData(product);
+        setPrices(product?.prices || []);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -157,8 +161,10 @@ const AddProduct = () => {
     }
   };
 
-  const handleUpdateForm = async () => {
+  const handleUpdateForm = async (e) => {
     try {
+      e.preventDefault();
+      console.log("product data ===================================",productData)
       const dataForm = {
         productName: productData.name,
         description: productData.description,
@@ -166,17 +172,19 @@ const AddProduct = () => {
         coin: productData.coin,
         status: productData.status,
         categoryId: productData.category_id,
-        subCategoryId: 33,
+        subCategoryId: productData.sub_category_id,
         brandName: productData.brand_name,
         prices: productData.prices,
       };
 
       console.log("hello is product ", productData);
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}/vendor/product/${id}`,
+        `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${id}`,
         dataForm
       );
       console.log("product updated ", response);
+      navigate("/products")
+      toast.success("product successfully edit")
     } catch (err) {
       console.error("Error updating product:", err);
       toast.error("Error updating product. Please try again later.");
@@ -228,7 +236,7 @@ const AddProduct = () => {
 
     const prices = [...productData.prices];
 
-    prices[priceIndex].configurations[configIndex][name] = value;
+    prices[priceIndex].config[configIndex][name] = value;
     // prices[priceIndex].configuration[configIndex][name] = value;
     setProductData({ ...productData, prices });
     console.log(name + " " + value + " ", configIndex, " ", priceIndex);
@@ -248,7 +256,7 @@ const AddProduct = () => {
             sale_price: "",
             images: [],
             specifications: [{ spec_key: "", spec_value: "" }],
-            configuration: [
+            config: [
               { size: "", old_price: "", sale_price: "", stock: "" },
             ],
           },
@@ -291,13 +299,13 @@ const AddProduct = () => {
   // Remove a configuration from a price entry
   const handleRemoveConfiguration = (priceIndex, configIndex) => {
     const prices = [...productData.prices];
-    prices[priceIndex].configuration.splice(configIndex, 1);
+    prices[priceIndex].config.splice(configIndex, 1);
     setProductData({ ...productData, prices });
   };
 
   const calculateTotalStock = () => {
     const total = productData.prices.reduce((priceSum, price) => {
-      const configSum = price.configuration.reduce((configSum, config) => {
+      const configSum = price.config.reduce((configSum, config) => {
         return configSum + (parseInt(config.stock, 10) || 0); // Parse stock and handle NaN
       }, 0);
       return priceSum + configSum;
@@ -321,7 +329,12 @@ const AddProduct = () => {
   //     reader.readAsDataURL(file); // Convert file to base64
   //   }
   // };
-
+  const handleInputChangeReact=(value)=>{
+      setProductData((prevData) => ({
+        ...prevData,
+        "description": value,
+      }));
+  }
   const handleMultipleImageChange = (priceIndex, e) => {
     const files = Array.from(e.target.files); // Convert FileList to Array
     const prices = [...productData.prices];
@@ -347,40 +360,7 @@ const AddProduct = () => {
   };
 
   // Form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("the productData is ", productData);
-    // Add product to API
-    try {
-      const formData = new FormData();
-      for (const key in productData) {
-        if (key === "prices") {
-          formData.append(key, JSON.stringify(productData[key]));
-        } else {
-          formData.append(key, productData[key]);
-        }
-      }
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_LARAVEL}api/product/add/${vendorId}`,
-        productData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log(response.data);
-      navigate("/products");
-      setMessage("Product updated successfully!");
-    } catch (error) {
-      console.error("Error in adding product", error);
-    }
-
-    toast.success("Product data submitted");
-  };
+ 
 
   return (
     <div className="flex">
@@ -393,7 +373,7 @@ const AddProduct = () => {
       >
         <h1 className="text-2xl font-bold mb-4">Update Products</h1>
         {message && <p className="text-green-500 mb-2">{message}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form  className="space-y-4">
           <div className="relative">
             {productData?.name?.length >= 100 && (
               <p className="text-green-500 block mb-2">
@@ -424,16 +404,27 @@ const AddProduct = () => {
                 description.
               </p>
             )}
-
-            <textarea
-              name="description"
-              placeholder="Product Description"
-              value={productData.description}
-              onChange={handleInputChange}
-              required
-              maxLength={5000} // Set the maximum character limit to 5000
-              className="w-full border border-gray-300 rounded p-2 h-[100px] max-h-[200px] resize-none"
-            ></textarea>
+   <ReactQuill
+                 value={productData.description}
+                 name="description"
+                 onChange={handleInputChangeReact}
+                  modules={{
+                    toolbar: [
+                      ["bold", "italic", "underline", "strike"], // Formatting buttons
+                      [{ list: "ordered" }, { list: "bullet" }], // Lists
+                      ["link", "image"], // Link and image options
+                      [{ header: [1, 2, 3, false] }], // Header dropdown
+                      [{ align: [] }], // Alignments
+                      [{ color: [] }, { background: [] }],
+                    ],
+                  }}
+                  placeholder={`Write your content for here...`}
+                  className="w-full"
+                  style={{
+                    height: "400px",
+                    overflowY: "auto",
+                  }}
+                />
             {/* Display character count */}
             <div className="absolute bottom-4 right-4 text-xs text-gray-500 z-10">
               {productData?.description?.length} / 5000
@@ -467,7 +458,7 @@ const AddProduct = () => {
                   src={
                     thumbnail
                       ? productData.featured_image
-                      : `${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${productData.featured_image}`
+                      : `${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${productData.featured_image}`
                   }
                   alt="Thumbnail Preview"
                   sx={{
@@ -716,7 +707,7 @@ const AddProduct = () => {
                 {price.images.map((img, imgIndex) => (
                   <div key={imgIndex} className="relative w-24 h-24">
                     <img
-                      src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${img?.image_path}`}
+                      src={`${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${img?.image_path}`}
                       alt={`Image ${imgIndex + 1}`}
                       className="w-full h-full object-cover rounded border"
                     />
@@ -733,7 +724,7 @@ const AddProduct = () => {
 
               <h3 className="font-semibold mt-4">Configurations</h3>
 
-              {price?.configurations.map((config, configIndex) => (
+              {price?.config.map((config, configIndex) => (
                 <div
                   key={configIndex}
                   className="mb-2 border-black-800 border-b-2 relative"

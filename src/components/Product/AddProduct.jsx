@@ -266,7 +266,7 @@ const AddProduct = () => {
  const handleMultipleImageChange = (priceIndex, e) => {
   const files = Array.from(e.target.files); // Convert FileList to Array
   const prices = [...productData.prices];
-
+  
   // Add selected files to the specific price index
   // prices[priceIndex].images.push(...files);
   setProductData({ ...productData, prices });
@@ -318,7 +318,7 @@ const handleSubmit = async (e) => {
 
     // Send request to API
     const response = await axios.post(
-      `http://127.0.0.1:8000/api/vendor/product/${vendorId}`,
+      `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${vendorId}`,
       formData,
       {
         headers: {
