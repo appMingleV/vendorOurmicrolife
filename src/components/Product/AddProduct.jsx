@@ -42,7 +42,7 @@ const AddProduct = () => {
         old_price: "",
         sale_price: "",
         specifications: [{ spec_key: "", spec_value: "" }],
-        configuration: [{ size: "", old_price: "", sale_price: "", stock: "" }],
+        configuration: [{ size: "", old_price: "", sale_price: "", stock: "", pices:""}],
       },
     ],
   });
@@ -179,7 +179,7 @@ const AddProduct = () => {
             images: [],
             specifications: [{ spec_key: "", spec_value: "" }],
             configuration: [
-              { size: "", old_price: "", sale_price: "", stock: "" },
+              { size: "", old_price: "", sale_price: "", stock: "" ,pices:""},
             ],
           },
         ],
@@ -219,6 +219,7 @@ const AddProduct = () => {
         old_price: "",
         sale_price: "",
         stock: "",
+        pices:""
       });
       setProductData({ ...productData, prices });
     }
@@ -372,12 +373,12 @@ const handleSubmit = async (e) => {
 
           <div className="relative">
             {/* Alert */}
-            {productData.description.length >= 5000 && (
+            {/* {productData.description.length >= 5000 && (
               <p className="text-green-500 block mb-2">
                 You have reached the maximum character limit of 5000 for the
                 description.
               </p>
-            )}
+            )} */}
 
            <ReactQuill
                  value={productData.description}
@@ -401,9 +402,7 @@ const handleSubmit = async (e) => {
                   }}
                 />
             {/* Display character count */}
-            <div className="absolute bottom-4 right-4 text-xs text-gray-500 z-10">
-              {productData.description.length} / 5000
-            </div>
+            
           </div>
 
           <div className="flex justify-between gap-y-2">
@@ -735,6 +734,17 @@ const handleSubmit = async (e) => {
                     name="sale_price"
                     placeholder="Sell Price"
                     value={config.sale_price}
+                    onChange={(e) =>
+                      handleConfigurationChange(priceIndex, configIndex, e)
+                    }
+                    required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
+                                    <input
+                    type="text"
+                    name="pices"
+                    placeholder="pices"
+                    value={config.pices}
                     onChange={(e) =>
                       handleConfigurationChange(priceIndex, configIndex, e)
                     }

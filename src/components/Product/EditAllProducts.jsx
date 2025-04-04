@@ -44,7 +44,7 @@ const AddProduct = () => {
         sale_price: "",
         images: [],
         specifications: [{ spec_key: "", spec_value: "" }],
-        config: [{ size: "", old_price: "", sale_price: "", stock: "" }],
+        config: [{ size: "", old_price: "", sale_price: "", stock: "", pices:"" }],
       },
     ],
   });
@@ -770,6 +770,17 @@ const AddProduct = () => {
                     name="sale_price"
                     placeholder="Sell Price"
                     value={config.sale_price}
+                    onChange={(e) =>
+                      handleConfigurationChange(priceIndex, configIndex, e)
+                    }
+                    required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
+                  <input
+                    type="text"
+                    name="pices"
+                    placeholder="pices"
+                    value={config.pices}
                     onChange={(e) =>
                       handleConfigurationChange(priceIndex, configIndex, e)
                     }
