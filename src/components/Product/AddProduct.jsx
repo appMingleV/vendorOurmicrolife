@@ -37,12 +37,13 @@ const AddProduct = () => {
     brand_name: "",
     prices: [
       {
-        color_name: "",
+        configValue: "",
         size_name: "",
+        config1:"",
         old_price: "",
         sale_price: "",
         specifications: [{ spec_key: "", spec_value: "" }],
-        configuration: [{ size: "", old_price: "", sale_price: "", stock: "", pices:""}],
+        configuration: [{ configId: "", configIdValue:"",old_price: "", sale_price: "", stock: "", pices:"",discount:""}],
       },
     ],
   });
@@ -119,7 +120,7 @@ const AddProduct = () => {
   };
   // Handle form data input changes
   const handleInputChange = (e) => {
-    console.log("nnnnnnnnnnnnnnnnnnnnnnnnn",e.target)
+
     const { name, value } = e.target;
     if (name === "quantity" || name == "coin") {
       // Allow only numbers (non-negative integers)
@@ -172,14 +173,15 @@ const AddProduct = () => {
         prices: [
           ...productData.prices,
           {
-            color_name: "",
+            configValue: "",
             size_name: "",
+            config1:"",
             old_price: "",
             sale_price: "",
             images: [],
             specifications: [{ spec_key: "", spec_value: "" }],
             configuration: [
-              { size: "", old_price: "", sale_price: "", stock: "" ,pices:""},
+              { configIdValue: "",configId:"", old_price: "", sale_price: "", stock: "" ,pices:"",discount:""},
             ],
           },
         ],
@@ -271,16 +273,21 @@ const AddProduct = () => {
   // Add selected files to the specific price index
   // prices[priceIndex].images.push(...files);
   setProductData({ ...productData, prices });
-
+   images[priceIndex]=[...files]
   // Update the images state with actual files
-  setImages((prevImages) => [...prevImages, ...files]);
+  setImages(images);
+  console.log(images)
 };
 
+ console.log(images)
+
   const handleRemoveImage = (priceIndex, imgIndex) => {
-    const prices = [...productData.prices];
- 
-    setProductData({ ...productData, prices });
-    setImages((prevImages) => prevImages.filter((_, index) => index !== imgIndex));
+    // const prices = [...productData.prices];
+  const newImages = [...images];
+  newImages[priceIndex] = [...newImages[priceIndex]].filter((_, index) => index !== imgIndex);
+  
+  setImages(newImages);
+  
   };
 
   // Form submission
@@ -306,11 +313,21 @@ const handleSubmit = async (e) => {
     }
 
     // Append multiple images (if available)
-    if (images && images.length > 0) {
-      images.forEach((image) => {
-        formData.append("images", image); // Proper way to send multiple images
-      });
+  productData.prices.forEach((priceItem, index) => {
+      // formData.append(`prices[${index`, priceItem.name);
+
+      if (images[index]) {
+        images[index].forEach((imgFile) => {
+          formData.append(`${index}`, imgFile); // [] helps group them
+        });
+      }
+    });
+
+    // Debug form data
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
     }
+
      console.log("product data ====================================>    ",productData)
     // Debugging: Check formData contents
     for (let [key, value] of formData.entries()) {
@@ -319,7 +336,7 @@ const handleSubmit = async (e) => {
 
     // Send request to API
     const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${vendorId}`,
+      `http://127.0.0.1:8000/api/vendor/product/${vendorId}`,
       formData,
       {
         headers: {
@@ -399,9 +416,10 @@ const handleSubmit = async (e) => {
                   style={{
                     height: "400px",
                     overflowY: "auto",
+                     whiteSpace: "pre-wrap", 
                   }}
                 />
-            {/* Display character count */}
+            {/* Display charactr count */}
             
           </div>
 
@@ -648,12 +666,20 @@ const handleSubmit = async (e) => {
               >
                 <RxCross2 />
               </button>
-
+               <input
+                type="text"
+                name="config1"
+                placeholder="config price name"
+                value={price.config1}
+                onChange={(e) => handlePriceChange(priceIndex, e)}
+                required
+                className="w-full border border-gray-300 rounded p-2 mb-2"
+              />
               <input
                 type="text"
-                name="color_name"
-                placeholder="Color"
-                value={price.color_name}
+                name="configValue"
+                placeholder="config price value"
+                value={price.configValue}
                 onChange={(e) => handlePriceChange(priceIndex, e)}
                 required
                 className="w-full border border-gray-300 rounded p-2 mb-2"
@@ -669,7 +695,7 @@ const handleSubmit = async (e) => {
                 />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {images?.map((img, imgIndex) => (
+                {images[priceIndex]?.map((img, imgIndex) => (
                   <div key={imgIndex} className="relative w-24 h-24">
                     <img
                       src={URL.createObjectURL(img)}
@@ -709,15 +735,27 @@ const handleSubmit = async (e) => {
                   </button>
                   <input
                     type="text"
-                    name="size"
-                    placeholder="Size:M,L,XL, ( 6+128 )"
-                    value={config.size}
+                    name="configId"
+                    placeholder="config name"
+                    value={config.configId}
                     onChange={(e) =>
                       handleConfigurationChange(priceIndex, configIndex, e)
                     }
                     required
                     className="w-full border border-gray-300 rounded p-2 mb-2"
                   />
+                  <input
+                    type="text"
+                    name="configIdValue"
+                    placeholder="config value"
+                    value={config.configIdValue}
+                    onChange={(e) =>
+                      handleConfigurationChange(priceIndex, configIndex, e)
+                    }
+                    required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
+                   
                   <input
                     type="text"
                     name="old_price"
@@ -761,6 +799,18 @@ const handleSubmit = async (e) => {
                       calculateTotalStock();
                     }}
                     required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
+                   <input
+                    type="text"
+                    name="discount"
+                    placeholder="discount"
+                    value={config.discount}
+                    onChange={(e) => {
+                      handleConfigurationChange(priceIndex, configIndex, e);
+                      calculateTotalStock();
+                    }}
+                    
                     className="w-full border border-gray-300 rounded p-2 mb-2"
                   />
                 </div>

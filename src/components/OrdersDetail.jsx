@@ -74,7 +74,7 @@ const OrdersDetail = () => {
                 </div>
                 <div className="flex">
                   <p className="font-semibold"> Payment Status:</p>
-                  <p>{product?.payment_type}</p>
+                  <p>{product?.paymentStatus}</p>
                 </div>
               </div>
             </div>
@@ -140,7 +140,7 @@ const OrdersDetail = () => {
                     <td className="p-4 text-left text-blue-500 font-semibold">
                       {product?.sales_price}
                     </td>
-                    <td className=" text-left">{product?.product_name}</td>
+                    <td className=" text-left">{product?.productName}</td>
                     <td className=" text-left">
                       <img
                         src={`${product?.product_image}`}

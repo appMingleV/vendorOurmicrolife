@@ -38,13 +38,15 @@ const AddProduct = () => {
     brand_name: "",
     prices: [
       {
-        color_name: "",
+         color_name: "",
         size_name: "",
+        
+          config1:"",
         old_price: "",
         sale_price: "",
         images: [],
         specifications: [{ spec_key: "", spec_value: "" }],
-        config: [{ size: "", old_price: "", sale_price: "", stock: "", pices:"" }],
+        config: [{ config2: "", size:"",old_price: "", sale_price: "", stock: "", pices:"",discount:"" }],
       },
     ],
   });
@@ -55,7 +57,8 @@ const AddProduct = () => {
   const [thumbnail, setthumbnail] = useState(false);
   const [subCategoriesId, setSubCategoriesId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-    const [images,setImages]=useState([]);
+    const [images,setImages]=useState([{ type: 'server', image_path: '' },
+  { type: 'local', file:'' }]);
   const [featuredImage,setfeaturedImage]=useState('');
   // Fetch all categories when the component mounts
   useEffect(() => {
@@ -76,6 +79,15 @@ const AddProduct = () => {
   
         setProductData(product);
         setPrices(product?.prices || []);
+        console.log(product?.prices)
+        const prices=product?.prices
+        const storeImage=[];
+        for(let i=0;i<prices.length;i++){
+          const serverImage=prices[i]?.images
+          storeImage[i]={ type: 'server', image_path:serverImage }
+        }
+        console.log("storage Images done==================================================>      ",storeImage);
+        setImages(storeImage)
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -175,9 +187,10 @@ const AddProduct = () => {
         subCategoryId: productData.sub_category_id,
         brandName: productData.brand_name,
         prices: productData.prices,
+        discount:productData.discount
       };
 
-      console.log("hello is product ", productData);
+      console.log("hello is product ", dataForm);
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${id}`,
         dataForm
@@ -235,7 +248,7 @@ const AddProduct = () => {
     const { name, value } = e.target;
 
     const prices = [...productData.prices];
-
+     console.log(name, "" ,value);
     prices[priceIndex].config[configIndex][name] = value;
     // prices[priceIndex].configuration[configIndex][name] = value;
     setProductData({ ...productData, prices });
@@ -253,11 +266,12 @@ const AddProduct = () => {
             color_name: "",
             size_name: "",
             old_price: "",
+            config1:"",
             sale_price: "",
             images: [],
             specifications: [{ spec_key: "", spec_value: "" }],
             config: [
-              { size: "", old_price: "", sale_price: "", stock: "" },
+              {config2: "", size: "", old_price: "", sale_price: "", stock: "",pices:"",discount:"" },
             ],
           },
         ],
@@ -338,7 +352,6 @@ const AddProduct = () => {
   const handleMultipleImageChange = (priceIndex, e) => {
     const files = Array.from(e.target.files); // Convert FileList to Array
     const prices = [...productData.prices];
-
     const readers = files.map((file) => {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -346,7 +359,7 @@ const AddProduct = () => {
         reader.readAsDataURL(file); // Convert file to base64
       });
     });
-
+  
     Promise.all(readers).then((base64Images) => {
       prices[priceIndex].images.push(...base64Images); // Add all images
       setProductData({ ...productData, prices });
@@ -355,6 +368,7 @@ const AddProduct = () => {
 
   const handleRemoveImage = (priceIndex, imgIndex) => {
     const prices = [...productData.prices];
+    console.log("=======================================================>   "  ,prices[priceIndex].images)
     prices[priceIndex].images.splice(imgIndex, 1); // Remove the image
     setProductData({ ...productData, prices });
   };
@@ -423,6 +437,7 @@ const AddProduct = () => {
                   style={{
                     height: "400px",
                     overflowY: "auto",
+                    whiteSpace:"pre-wrap"
                   }}
                 />
             {/* Display character count */}
@@ -684,16 +699,24 @@ const AddProduct = () => {
                 <RxCross2 />
               </button>
 
+             <input
+                type="text"
+                name="config1"
+                placeholder="config price name"
+                value={price.config1}
+                onChange={(e) => handlePriceChange(priceIndex, e)}
+                required
+                className="w-full border border-gray-300 rounded p-2 mb-2"
+              />
               <input
                 type="text"
                 name="color_name"
-                placeholder="Color"
+                placeholder="config price value"
                 value={price.color_name}
                 onChange={(e) => handlePriceChange(priceIndex, e)}
                 required
                 className="w-full border border-gray-300 rounded p-2 mb-2"
               />
-
               <h3 className="font-semibold mt-2">Images</h3>
               <div>
                 <input
@@ -704,22 +727,29 @@ const AddProduct = () => {
                 />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {price.images.map((img, imgIndex) => (
-                  <div key={imgIndex} className="relative w-24 h-24">
-                    <img
-                      src={`${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${img?.image_path}`}
-                      alt={`Image ${imgIndex + 1}`}
-                      className="w-full h-full object-cover rounded border"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(priceIndex, imgIndex)}
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+                {images?.map((imgGroup, groupIndex) =>
+  imgGroup.image_path?.map((img, imgIndex) => (
+    <div key={`${groupIndex}-${imgIndex}`} className="relative w-24 h-24">
+      <img
+        src={
+          imgGroup?.type === "server"
+            ? `${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${img?.image_path}`
+            : URL.createObjectURL(img)
+        }
+        alt={`Image ${imgIndex + 1}`}
+        className="w-full h-full object-cover rounded border"
+      />
+      <button
+        type="button"
+        onClick={() => handleRemoveImage(priceIndex, groupIndex, imgIndex)}
+        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm"
+      >
+        ×
+      </button>
+    </div>
+  ))
+)}
+
               </div>
 
               <h3 className="font-semibold mt-4">Configurations</h3>
@@ -743,10 +773,21 @@ const AddProduct = () => {
                   >
                     <RxCross2 />
                   </button>
+                 <input
+                    type="text"
+                    name="config2"
+                    placeholder="config name"
+                    value={config.config2}
+                    onChange={(e) =>
+                      handleConfigurationChange(priceIndex, configIndex, e)
+                    }
+                    required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
                   <input
                     type="text"
                     name="size"
-                    placeholder="Size:M,L,XL, ( 6+128 )"
+                    placeholder="config value"
                     value={config.size}
                     onChange={(e) =>
                       handleConfigurationChange(priceIndex, configIndex, e)
@@ -792,6 +833,18 @@ const AddProduct = () => {
                     name="stock"
                     placeholder="Quantity"
                     value={config.stock}
+                    onChange={(e) => {
+                      handleConfigurationChange(priceIndex, configIndex, e);
+                      calculateTotalStock();
+                    }}
+                    required
+                    className="w-full border border-gray-300 rounded p-2 mb-2"
+                  />
+                   <input
+                    type="text"
+                    name="discount"
+                    placeholder="discount"
+                    value={config.discount}
                     onChange={(e) => {
                       handleConfigurationChange(priceIndex, configIndex, e);
                       calculateTotalStock();

@@ -146,7 +146,7 @@ const Orders = () => {
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {order?.payment_type}
+                      {order?.paymentStatus}
                     </span>
                   </td>
                   <td>{order?.total_price}</td>

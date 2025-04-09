@@ -69,7 +69,7 @@ const PreviewAllProducts = () => {
           {/* Product Image */}
           <div className=" right-10 top-20 w-full md:w-1/3 flex justify-center mb-6 md:mb-0 absolute">
             <img
-              src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${product.featured_image}`}
+              src={`${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${product.featured_image}`}
               // src={`https://uvfolderking.com/suresop/storage/app/public/${product.featured_image}`}
               alt="Product Preview"
               className="w-55 h-55 object-cover rounded-lg shadow-sm"
@@ -245,7 +245,7 @@ const PreviewAllProducts = () => {
                 {priceItem.images.map((image, imgIndex) => (
                   <img
                     key={imgIndex}
-                    src={`${process.env.REACT_APP_BASE_LARAVEL}storage/app/public/${image.image_path}`}
+                    src={`${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${image.image_path}`}
                     // src={`https://uvfolderking.com/suresop/storage/app/public/${image.image_path}`}
                     alt={`Product ${index} Image ${imgIndex}`}
                     style={{
