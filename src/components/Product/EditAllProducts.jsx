@@ -81,10 +81,16 @@ const AddProduct = () => {
         setPrices(product?.prices || []);
         console.log(product?.prices)
         const prices=product?.prices
+        setfeaturedImage(product.featured_image)
         const storeImage=[];
         for(let i=0;i<prices.length;i++){
           const serverImage=prices[i]?.images
-          storeImage[i]={ type: 'server', image_path:serverImage }
+          const arrayImage=[];
+          for(let i=0;i<serverImage.length;i++){
+                  arrayImage.push({type:"server",image_path:serverImage[i]});
+          }
+          console.log("=================================================>      ",arrayImage);
+          storeImage[i]=arrayImage;
         }
         console.log("storage Images done==================================================>      ",storeImage);
         setImages(storeImage)
@@ -175,25 +181,47 @@ const AddProduct = () => {
 
   const handleUpdateForm = async (e) => {
     try {
+      
       e.preventDefault();
       console.log("product data ===================================",productData)
-      const dataForm = {
-        productName: productData.name,
-        description: productData.description,
-        quantity: productData.quantity,
-        coin: productData.coin,
-        status: productData.status,
-        categoryId: productData.category_id,
-        subCategoryId: productData.sub_category_id,
-        brandName: productData.brand_name,
-        prices: productData.prices,
-        discount:productData.discount
-      };
-
-      console.log("hello is product ", dataForm);
+        const formData = new FormData();
+      // const dataForm = {
+      //   productName: productData.name,
+      //   description: productData.description,
+      //   quantity: productData.quantity,
+      //   coin: productData.coin,
+      //   status: productData.status,
+      //   categoryId: productData.category_id,
+      //   subCategoryId: productData.sub_category_id,
+      //   brandName: productData.brand_name,
+      //   prices: productData.prices,
+      //   discount:productData.discount
+      // };
+ for (const key in productData) {
+      if (key === "prices") {
+        formData.append(key, JSON.stringify(productData[key])); // Convert array to JSON string
+      } else {
+        console.log(key)
+        formData.append(key, productData[key]);
+      }
+    }
+     
+     if (featuredImage) {
+      formData.append("featured_image", featuredImage);
+    }
+ productData.prices.forEach((priceItem, index) => {
+      // formData.append(`prices[${index`, priceItem.name);
+      if (images[index]) {
+        images[index].forEach((imgFile) => {
+          formData.append(`${index}`, imgFile.type=="server"?"":imgFile?.image_path); // [] helps group them
+        });
+      }
+    });
+    
+      // console.log("hello is product ", dataForm);
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL_NODE}api/vendor/product/${id}`,
-        dataForm
+        `${process.env.REACT_APP_BASE_URL}vendor/product/${id}`,
+        formData
       );
       console.log("product updated ", response);
       navigate("/products")
@@ -350,7 +378,7 @@ const AddProduct = () => {
       }));
   }
   const handleMultipleImageChange = (priceIndex, e) => {
-    const files = Array.from(e.target.files); // Convert FileList to Array
+    const files = Array.from(e.target.files); 
     const prices = [...productData.prices];
     const readers = files.map((file) => {
       return new Promise((resolve) => {
@@ -364,13 +392,28 @@ const AddProduct = () => {
       prices[priceIndex].images.push(...base64Images); // Add all images
       setProductData({ ...productData, prices });
     });
+          const arrayImage=[];
+          for(let i=0;i<files.length;i++){
+           arrayImage.push({type:"local",image_path:files[i]});
+          }
+          images[priceIndex]=[...images[priceIndex],...arrayImage];
+          // console.log("",arrayImage);
+          setImages(images);
+        console.log("=============================>  ",images);
+    // images[priceIndex].image_path=[...images[priceIndex]?.image_path,...files];
+    // setImages(images);
   };
 
-  const handleRemoveImage = (priceIndex, imgIndex) => {
+  const handleRemoveImage = async(priceIndex, imgIndex,id) => {
     const prices = [...productData.prices];
-    console.log("=======================================================>   "  ,prices[priceIndex].images)
-    prices[priceIndex].images.splice(imgIndex, 1); // Remove the image
-    setProductData({ ...productData, prices });
+    console.log("=======================================================>   "  ,id)
+    if(id){
+          const response=await axios.delete(`${process.env.REACT_APP_BASE_URL}vendor/productImage/${id}`);    
+    }
+    images[priceIndex]?.splice(imgIndex, 1); 
+  
+    setImages(images);
+        setProductData({ ...productData, prices });
   };
 
   // Form submission
@@ -472,7 +515,7 @@ const AddProduct = () => {
                   component="img"
                   src={
                     thumbnail
-                      ? productData.featured_image
+                      ? URL.createObjectURL(featuredImage)
                       : `${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${productData.featured_image}`
                   }
                   alt="Thumbnail Preview"
@@ -510,13 +553,15 @@ const AddProduct = () => {
                   console.log("changes ", e.target.files[0].name);
                   const file = e.target.files[0];
                   setthumbnail(true);
+                  setfeaturedImage(file);
+                  console.log(featuredImage);
                   if (file) {
                     const reader = new FileReader();
-                    console.log(reader);
+           
                     reader.onloadend = () => {
                       setProductData({
                         ...productData,
-                        featured_image: reader.result,
+                      
                       });
                       setPreview(reader.result);
                     };
@@ -727,27 +772,25 @@ const AddProduct = () => {
                 />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {images?.map((imgGroup, groupIndex) =>
-  imgGroup.image_path?.map((img, imgIndex) => (
-    <div key={`${groupIndex}-${imgIndex}`} className="relative w-24 h-24">
+                {images[priceIndex]?.map((imgGroup, groupIndex) =>
+    <div key={`${groupIndex}-${groupIndex}`} className="relative w-24 h-24">
       <img
         src={
           imgGroup?.type === "server"
-            ? `${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${img?.image_path}`
-            : URL.createObjectURL(img)
+            ? `${process.env.REACT_APP_BASE_URL_NODE}uploads/product/${imgGroup?.image_path?.image_path}`
+            : URL.createObjectURL(imgGroup?.image_path)
         }
-        alt={`Image ${imgIndex + 1}`}
+        alt={`Image ${groupIndex + 1}`}
         className="w-full h-full object-cover rounded border"
       />
       <button
         type="button"
-        onClick={() => handleRemoveImage(priceIndex, groupIndex, imgIndex)}
+        onClick={() => handleRemoveImage(priceIndex, groupIndex,imgGroup?.image_path?.id)}
         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm"
       >
         ×
       </button>
     </div>
-  ))
 )}
 
               </div>
