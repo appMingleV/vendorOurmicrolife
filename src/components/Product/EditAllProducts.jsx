@@ -131,6 +131,7 @@ const AddProduct = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  
   // Fetch subcategories when a category is selected
   const handleCategoryChange = async (e) => {
     const categoryId = e.target.value;
@@ -200,16 +201,19 @@ const AddProduct = () => {
  for (const key in productData) {
       if (key === "prices") {
         formData.append(key, JSON.stringify(productData[key])); // Convert array to JSON string
-      } else {
-        console.log(key)
+      } else if(key=="featured_image") {
+
+      }else{
+         console.log(key)
         formData.append(key, productData[key]);
       }
     }
-     
+    console.log("featured I",featuredImage)
+    
      if (featuredImage) {
       formData.append("featured_image", featuredImage);
     }
- productData.prices.forEach((priceItem, index) => {
+      productData.prices.forEach((priceItem, index) => {
       // formData.append(`prices[${index`, priceItem.name);
       if (images[index]) {
         images[index].forEach((imgFile) => {
@@ -220,7 +224,7 @@ const AddProduct = () => {
     
       // console.log("hello is product ", dataForm);
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}vendor/product/${id}`,
+        `http://127.0.0.1:8000/api/vendor/product/${id}`,
         formData
       );
       console.log("product updated ", response);
@@ -322,21 +326,21 @@ const AddProduct = () => {
   };
 
   // Add a new configuration to a price entry
-  // const handleAddConfiguration = (priceIndex) => {
-  //   const prices = [...productData.prices];
-  //   const currentConfigLength = prices[priceIndex]?.configurations?.length;
+  const handleAddConfiguration = (priceIndex) => {
+    const prices = [...productData.prices];
+    const currentConfigLength = prices[priceIndex]?.config?.length;
 
-  //   // Only allow adding a new configuration if there are fewer than 5
-  //   if (currentConfigLength < 5) {
-  //     prices[priceIndex].configuration.push({
-  //       size: "",
-  //       old_price: "",
-  //       sale_price: "",
-  //       stock: "",
-  //     });
-  //     setProductData({ ...productData, prices });
-  //   }
-  // };
+    // Only allow adding a new configuration if there are fewer than 5
+    if (currentConfigLength < 5) {
+      prices[priceIndex].config.push({
+        size: "",
+        old_price: "",
+        sale_price: "",
+        stock: "",
+      });
+      setProductData({ ...productData, prices });
+    }
+  };
 
   // Remove a configuration from a price entry
   const handleRemoveConfiguration = (priceIndex, configIndex) => {
@@ -389,7 +393,6 @@ const AddProduct = () => {
     });
   
     Promise.all(readers).then((base64Images) => {
-      prices[priceIndex].images.push(...base64Images); // Add all images
       setProductData({ ...productData, prices });
     });
           const arrayImage=[];
@@ -897,20 +900,20 @@ const AddProduct = () => {
                   />
                 </div>
               ))}
-              {/* <button
+              <button
                 type="button"
                 onClick={() => handleAddConfiguration(priceIndex)}
                 className={`text-blue-500 bg-gray-100 py-1 px-2 border border-gray-300 rounded ${
-                  price.configuration.length >= 5
+                  price.config.length >= 5
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
-                disabled={price.configuration.length >= 5} // Disable the button when there are 5 configurations
+                disabled={price.config.length >= 5} // Disable the button when there are 5 configurations
               >
-                {price.configuration.length >= 5
+                {price.config.length >= 5
                   ? "Max Configurations Reached"
                   : "Add More Configurations"}
-              </button> */}
+              </button>
             </div>
           ))}
           <button
