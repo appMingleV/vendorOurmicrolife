@@ -273,7 +273,8 @@ const AddProduct = () => {
   // Add selected files to the specific price index
   // prices[priceIndex].images.push(...files);
   setProductData({ ...productData, prices });
-  images[priceIndex]=[...files]
+  const oldImages=images[priceIndex]?[...images[priceIndex]]:[]
+  images[priceIndex]=[...oldImages,...files]
   // Update the images state with actual files
   setImages(images);
   console.log(images)
@@ -287,7 +288,8 @@ const AddProduct = () => {
   newImages[priceIndex] = [...newImages[priceIndex]].filter((_, index) => index !== imgIndex);
   
   setImages(newImages);
-  
+  console.log("image is deleted  ")
+  toast.success("image successfully deleted");
   };
 
   // Form submission
@@ -336,7 +338,7 @@ const handleSubmit = async (e) => {
 
     // Send request to API
     const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}vendor/product/${vendorId}`,
+      `http://127.0.0.1:8000/api/vendor/product/${vendorId}`,
       formData,
       {
         headers: {
@@ -525,7 +527,7 @@ const handleSubmit = async (e) => {
                     Show Product
                   </label>
                   <label className="flex items-center cursor-pointer">
-                    {productData.status === "hide" ? (
+                    {productData.status === "hold" ? (
                       <FaCheckCircle className="text-blue-500 mr-2" />
                     ) : (
                       <MdOutlineRadioButtonUnchecked className="text-gray-500 mr-2" />
@@ -533,8 +535,8 @@ const handleSubmit = async (e) => {
                     <input
                       type="radio"
                       name="status"
-                      value="hide"
-                      checked={productData.status === "hide"}
+                      value="hold"
+                      checked={productData.status === "hold"}
                       onChange={handleStatusChange}
                       className="hidden"
                     />

@@ -38,10 +38,9 @@ const AddProduct = () => {
     brand_name: "",
     prices: [
       {
-         color_name: "",
+        color_name: "",
         size_name: "",
-        
-          config1:"",
+        config1:"",
         old_price: "",
         sale_price: "",
         images: [],
@@ -57,6 +56,7 @@ const AddProduct = () => {
   const [thumbnail, setthumbnail] = useState(false);
   const [subCategoriesId, setSubCategoriesId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [changeStatus,setChangeStatus]=useState(false);
     const [images,setImages]=useState([{ type: 'server', image_path: '' },
   { type: 'local', file:'' }]);
   const [featuredImage,setfeaturedImage]=useState('');
@@ -100,7 +100,7 @@ const AddProduct = () => {
     };
     fetchSingleProduct();
     console.log("prodcut  data", productData);
-  }, []);
+  }, [changeStatus]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -224,7 +224,7 @@ const AddProduct = () => {
     
       // console.log("hello is product ", dataForm);
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/vendor/product/${id}`,
+        `${process.env.REACT_APP_BASE_URL}vendor/product/${id}`,
         formData
       );
       console.log("product updated ", response);
@@ -262,8 +262,12 @@ const AddProduct = () => {
   // Handle changes in price details
   const handlePriceChange = (index, e) => {
     const { name, value } = e.target;
+    console.log("name====>  ",name);
+    console.log("value===>  ",value);
+    console.log("index===>  ",index);
     const prices = [...productData.prices];
     prices[index][name] = value;
+    setPrices(prices);
     setProductData({ ...productData, prices });
   };
 
@@ -289,7 +293,18 @@ const AddProduct = () => {
 
   // Add a new price entry
   const handleAddPrice = () => {
+    console.log("prices ==>  ",productData?.prices)
     if (productData?.prices?.length < 5) {
+      setPrices([...prices, {
+        color_name: "",
+        size_name: "",
+        config1:"",
+        old_price: "",
+        sale_price: "",
+        images: [],
+        specifications: [{ spec_key: "", spec_value: "" }],
+        config: [{ config2: "", size:"",old_price: "", sale_price: "", stock: "", pices:"",discount:"" }],
+      }])
       setProductData({
         ...productData,
         prices: [
@@ -312,10 +327,18 @@ const AddProduct = () => {
   };
 
   // Remove a price entry
-  const handleRemovePrice = (priceIndex) => {
+  const handleRemovePrice =async (priceIndex,priceId) => {
+    console.log("price Index  ===============>   ",priceId)
     const prices = [...productData.prices];
+    if(priceId){
+      const response=await axios.delete(`http://127.0.0.1:8000/api/vendor/productPrice/${priceId}`)
+      console.log(response)
+    }
     prices.splice(priceIndex, 1);
+    setPrices(prices)
     setProductData({ ...productData, prices });
+    setChangeStatus(!changeStatus)
+    toast.success("Price configuration deleted sucessfully")
   };
 
   // Add a new specification to a price entry
@@ -343,10 +366,17 @@ const AddProduct = () => {
   };
 
   // Remove a configuration from a price entry
-  const handleRemoveConfiguration = (priceIndex, configIndex) => {
+  const handleRemoveConfiguration = async(priceIndex, configIndex,configId) => {
+    console.log("==========>       ",configId);
+    if(configId){
+      const response=await axios.delete(`http://127.0.0.1:8000/api/vendor/productConfig/${configId}`);
+      console.log("=============>  ",response)
+    }
+
     const prices = [...productData.prices];
     prices[priceIndex].config.splice(configIndex, 1);
     setProductData({ ...productData, prices });
+    toast.success("config deleted sucessfully ")
   };
 
   const calculateTotalStock = () => {
@@ -399,7 +429,9 @@ const AddProduct = () => {
           for(let i=0;i<files.length;i++){
            arrayImage.push({type:"local",image_path:files[i]});
           }
-          images[priceIndex]=[...images[priceIndex],...arrayImage];
+          console.log("priceIndex ===>   ",priceIndex);
+          const oldArray=images[priceIndex]?[...images[priceIndex]]:[]
+          images[priceIndex]=[...oldArray,...arrayImage];
           // console.log("",arrayImage);
           setImages(images);
         console.log("=============================>  ",images);
@@ -409,7 +441,7 @@ const AddProduct = () => {
 
   const handleRemoveImage = async(priceIndex, imgIndex,id) => {
     const prices = [...productData.prices];
-    console.log("=======================================================>   "  ,id)
+
     if(id){
           const response=await axios.delete(`${process.env.REACT_APP_BASE_URL}vendor/productImage/${id}`);    
     }
@@ -417,6 +449,7 @@ const AddProduct = () => {
   
     setImages(images);
         setProductData({ ...productData, prices });
+        toast.success("Image successfully deleted");
   };
 
   // Form submission
@@ -605,7 +638,7 @@ const AddProduct = () => {
                     Show Product
                   </label>
                   <label className="flex items-center cursor-pointer">
-                    {productData.status === "hide" ? (
+                    {productData.status === "hold" ? (
                       <FaCheckCircle className="text-blue-500 mr-2" />
                     ) : (
                       <MdOutlineRadioButtonUnchecked className="text-gray-500 mr-2" />
@@ -613,8 +646,8 @@ const AddProduct = () => {
                     <input
                       type="radio"
                       name="status"
-                      value="hide"
-                      checked={productData.status === "hide"}
+                      value="hold"
+                      checked={productData.status === "hold"}
                       onChange={handleStatusChange}
                       className="hidden"
                     />
@@ -737,12 +770,12 @@ const AddProduct = () => {
               <button
                 type="button"
                 className={`absolute top-0 right-0 text-red-500 bg-red-100 p-1 text-lg ${
-                  productData.prices?.length === 1
+                 prices.length === 1
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
-                onClick={() => handleRemovePrice(priceIndex)}
-                disabled={productData.prices?.length === 1}
+                onClick={() => handleRemovePrice(priceIndex,price?.id)}
+                disabled={prices.length === 1}
               >
                 <RxCross2 />
               </button>
@@ -808,14 +841,14 @@ const AddProduct = () => {
                   <button
                     type="button"
                     className={`absolute -top-7 -right-6 p-[2px] text-gray-800 bg-gray-100 ${
-                      price.configurations?.length === 1
+                      price.config.length === 1
                         ? "opacity-50 cursor-not-allowed"
                         : ""
                     }`}
                     onClick={() =>
-                      handleRemoveConfiguration(priceIndex, configIndex)
+                      handleRemoveConfiguration(priceIndex, configIndex,config?.id)
                     }
-                    disabled={price.configurations?.length === 1}
+                    disabled={price.config.length === 1}
                   >
                     <RxCross2 />
                   </button>
