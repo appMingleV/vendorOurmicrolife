@@ -338,7 +338,7 @@ const handleSubmit = async (e) => {
 
     // Send request to API
     const response = await axios.post(
-      `http://127.0.0.1:8000/api/vendor/product/${vendorId}`,
+      `${process.env.REACT_APP_BASE_URL}vendor/product/${vendorId}`,
       formData,
       {
         headers: {

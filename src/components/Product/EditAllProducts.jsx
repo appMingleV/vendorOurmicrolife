@@ -282,13 +282,15 @@ const AddProduct = () => {
   // Handle configuration changes
   const handleConfigurationChange = (priceIndex, configIndex, e) => {
     const { name, value } = e.target;
-
-    const prices = [...productData.prices];
-     console.log(name, "" ,value);
+    console.log(name,value);
+    // console.log("========>         ",prices)
+    // console.log("hight is ====>           ",prices[priceIndex]?.config)
+    // const prices = [...productData.prices];
+    
     prices[priceIndex].config[configIndex][name] = value;
     // prices[priceIndex].configuration[configIndex][name] = value;
     setProductData({ ...productData, prices });
-    console.log(name + " " + value + " ", configIndex, " ", priceIndex);
+
   };
 
   // Add a new price entry
@@ -331,7 +333,7 @@ const AddProduct = () => {
     console.log("price Index  ===============>   ",priceId)
     const prices = [...productData.prices];
     if(priceId){
-      const response=await axios.delete(`http://127.0.0.1:8000/api/vendor/productPrice/${priceId}`)
+      const response=await axios.delete(`${process.env.REACT_APP_BASE_URL}vendor/productPrice/${priceId}`)
       console.log(response)
     }
     prices.splice(priceIndex, 1);
@@ -369,7 +371,7 @@ const AddProduct = () => {
   const handleRemoveConfiguration = async(priceIndex, configIndex,configId) => {
     console.log("==========>       ",configId);
     if(configId){
-      const response=await axios.delete(`http://127.0.0.1:8000/api/vendor/productConfig/${configId}`);
+      const response=await axios.delete(`${process.env.REACT_APP_BASE_URL}vendor/productConfig/${configId}`);
       console.log("=============>  ",response)
     }
 
@@ -833,7 +835,7 @@ const AddProduct = () => {
 
               <h3 className="font-semibold mt-4">Configurations</h3>
 
-              {price?.config.map((config, configIndex) => (
+              {price?.config?.map((config, configIndex) => (
                 <div
                   key={configIndex}
                   className="mb-2 border-black-800 border-b-2 relative"
