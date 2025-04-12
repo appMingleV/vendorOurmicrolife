@@ -1,5 +1,5 @@
 // src/components/App.js
-import React from "react";
+import React ,{useEffect} from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import AddCategory from "./components/Category/AddCategoryForm.jsx";
@@ -27,6 +27,8 @@ import SignUp from "./components/SignUp.jsx";
 import Support from "./components/Support.jsx";
 import Transactions from "./components/Transactions.jsx";
 import Analytics from "./components/Analytics.jsx";
+import {ToastContainer,toast} from "react-toastify"
+import socket from "./socket.js"; // Import the socket instance
 
 const App = () => {
   const NAVIGATION = [
@@ -55,6 +57,43 @@ const App = () => {
     { path: "/inventory", element: <Inventory /> },
   ];
 
+  const showToast = (type, message) => {
+    if (type === "success") {
+      console.log("success");
+      toast.success(message);
+    } else if (type === "error") {
+      toast.error(message);
+    } else {
+      toast(message);
+    }
+  };
+  console.log("---------->", showToast);
+  const vendorId = localStorage.getItem("vendorId");
+  useEffect(() => {
+
+      
+
+
+    if (vendorId) {
+      socket.emit("register", {
+        role: "vendor",
+        userId: vendorId,
+      });
+
+      const handleOrderNotification = (data) => {
+        console.log("toast here");
+        // showToast("success","successfulll!!!")
+        showToast("success", `New order received! from User ID: ${data}`);
+      };
+
+      socket.on("order-recieve", handleOrderNotification);
+
+      return () => {
+        socket.off("order-receive", handleOrderNotification);
+      };
+    }
+  }, [vendorId]);
+
   return (
     <>
       <Routes>
@@ -63,6 +102,7 @@ const App = () => {
         ))}
         <Route path="*" element={<NoPage />} />
       </Routes>
+      <ToastContainer/>
     </>
   );
 };
