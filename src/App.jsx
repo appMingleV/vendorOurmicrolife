@@ -79,7 +79,7 @@ const App = () => {
         role: "vendor",
         userId: vendorId,
       });
-
+      console.log("vendor connected to websocket")
       const handleOrderNotification = (data) => {
         console.log("toast here");
         // showToast("success","successfulll!!!")
