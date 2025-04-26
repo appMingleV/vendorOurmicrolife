@@ -346,8 +346,11 @@ const handleSubmit = async (e) => {
         },
       }
     );
+       console.log(response.data);
+    const responseDimension=await axios.post(
+      `${process.env.REACT_APP_BASE_URL}vendor/dimension/product/${response?.data?.productId}`,dimensionData);
+    
 
-    console.log(response.data);
     setMessage("Product added successfully!");
     navigate("/products");
 
