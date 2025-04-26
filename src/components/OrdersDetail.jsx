@@ -225,7 +225,7 @@ const OrdersDetail = () => {
   }, []);
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-gray-100 min-h-screen pt-4 md:pt-2 lg:pt-40">
       <Sidebar />
       <div className="flex-1 p-6">
         <h1 className="text-center text-3xl font-bold text-blue-700 mb-6">Order Details</h1>
